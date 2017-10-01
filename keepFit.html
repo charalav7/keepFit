@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepFitTimeCounter</title>
+</head>
+
+<body>
+    <h1>Hi!</h1>
+    <h2>Time for some stretching!</h2>
+    <div class="sets">
+        <h2>
+            Set the number of sets
+        </h2>
+        <p id="sets">
+            <input type="number" value="1" id="setnum" min="0" max="50">
+        </p>
+    </div>
+    <div class="time">
+        <h2>Set the time of the Exercise</h2>
+        <span id=hours>
+            Hours:
+            <input type="range" min="0" max="3" value="0" id="hoursInputId" oninput="hoursOutputId.value = hoursInputId.value">
+            <output name="hoursOutputName" id="hoursOutputId">0</output>
+        </span>
+        <span id=mins>
+            , Minutes:
+            <input type="range" min="0" max="60" value="0" id="minsInputId" oninput="minsOutputId.value = minsInputId.value">
+            <output name="minsOutputName" id="minsOutputId">0</output>
+        </span>
+        <span id=secs>
+            , Seconds:
+            <input type="range" min="0" max="60" value="0" id="secsInputId" oninput="secsOutputId.value = secsInputId.value">
+            <output name="secsOutputName" id="secsOutputId">0</output>
+        </span>
+    </div>
+    <div class="time2">
+        <h2>Set the time of the Rest</h2>
+        <span id=hours2>
+            Hours:
+            <input type="range" min="0" max="3" value="0" id="hours2InputId" oninput="hours2OutputId.value = hours2InputId.value">
+            <output name="hours2OutputName" id="hours2OutputId">0</output>
+        </span>
+        <span id=mins2>
+            , Minutes:
+            <input type="range" min="0" max="60" value="0" id="mins2InputId" oninput="mins2OutputId.value = mins2InputId.value">
+            <output name="mins2OutputName" id="mins2OutputId">0</output>
+        </span>
+        <span id=secs2>
+            , Seconds:
+            <input type="range" min="0" max="60" value="0" id="secs2InputId" oninput="secs2OutputId.value = secs2InputId.value">
+            <output name="secs2OutputName" id="secs2OutputId">0</output>
+        </span>
+    </div>
+    <div class="buttons">
+        <p><button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset"><a href="index.html">Reset</a></button></p>
+
+    </div>
+    <div class="display">
+        <h1 id="setnumm"></h1>
+        <h1 id="tex">Waiting for Start Button</h1>
+        <h1 id="tre"></h1>
+    </div>
+
+    <script type="text/javascript">
+        var start = document.querySelector("#start");
+        var stop = document.querySelector("#stop");
+        var reset = document.querySelector("#reset");
+
+        var sets = document.querySelector("#setnum");
+        var exhours = document.querySelector("#hoursInputId");
+        var exmins = document.querySelector("#minsInputId");
+        var exsecs = document.querySelector("#secsInputId");
+
+        var reshours = document.querySelector("#hours2InputId");
+        var resmins = document.querySelector("#mins2InputId");
+        var ressecs = document.querySelector("#secs2InputId");
+        var tex = document.querySelector("#tex");
+        var tre = document.querySelector("#tre");
+        var setnumm = document.querySelector('#setnumm');
+
+        var numSets = Number(sets.value);
+
+        var xhours = Number(exhours.value);
+        var xmins = Number(exmins.value);
+        var xsecs = Number(exsecs.value);
+
+        var totalEx = xhours * 3600 + xmins * 60 + xsecs;
+
+        var rhours = Number(reshours.value);
+        var rmins = Number(resmins.value);
+        var rsecs = Number(ressecs.value);
+
+        var totalRes = rhours * 3600 + rmins * 60 + rsecs;
+
+        sets.addEventListener("change", setsChange);
+
+        exhours.addEventListener("change", hoursChange);
+        exmins.addEventListener("change", minsChange);
+        exsecs.addEventListener("change", secsChange);
+
+        reshours.addEventListener("change", hoursChange2);
+        resmins.addEventListener("change", minsChange2);
+        ressecs.addEventListener("change", secsChange2);
+
+        var isPaused = false;
+        var isReset = false;
+        var i = 1;
+        var stops = 0;
+
+        start.addEventListener("click", startFunction);
+        stop.addEventListener("click", pauseFunction);
+        reset.addEventListener("click", resetFunction);
+
+        function startFunction() {
+            start.setAttribute("disabled", "true");
+            var exCounter = totalEx;
+            var resCounter = totalRes;
+            var t = setInterval(function() {
+                if (!isPaused) {
+                    if (i <= numSets) {
+                        setnumm.style.fontSize = '3em';
+                        setnumm.textContent = 'Set #' + i;
+                        if (exCounter !== 0) {
+                            tex.style.display = 'inline';
+                            tex.style.background = 'red';
+                            tex.style.color = 'white';
+                            tex.style.fontSize = '5em';
+                            tex.textContent = 'Exercise: ' + exCounter;
+                            exCounter--;
+
+                        } else {
+                            tex.style.display = 'none';
+                            if (resCounter !== 0) {
+                                tre.style.display = 'inline';
+                                tre.style.background = 'green';
+                                tre.style.color = 'white';
+                                tre.style.fontSize = '5em';
+                                tre.textContent = 'Rest: ' + resCounter;
+                                resCounter--;
+                            } else {
+                                tre.style.display = 'none';
+                                exCounter = totalEx;
+                                resCounter = totalRes;
+                                i++;
+                            }
+                        }
+
+                    } else {
+                        setnumm.textContent = 'Exercise Finished!!!';
+                        clearInterval(t);
+                    }
+                }
+            }, 1000);
+        }
+
+        function pauseFunction() {
+            stops++;
+            if (stops === 1) {
+                isPaused = true;
+                stop.textContent = 'Continue';
+            }
+            else{
+                stops = 0;
+                stop.textContent = 'Stop';
+                isPaused = false;
+            }
+
+        }
+
+        function resetFunction() {
+
+        }
+
+        function setsChange() {
+            numSets = Number(this.value);
+        }
+
+        function hoursChange() {
+            xhours = Number(this.value);
+            totalEx = xhours * 3600 + xmins * 60 + xsecs;
+        }
+
+        function minsChange() {
+            xmins = Number(this.value);
+            totalEx = xhours * 3600 + xmins * 60 + xsecs;
+        }
+
+        function secsChange() {
+            xsecs = Number(this.value);
+            totalEx = xhours * 3600 + xmins * 60 + xsecs;
+        }
+
+        function hoursChange2() {
+            rhours = Number(this.value);
+            totalRes = rhours * 3600 + rmins * 60 + rsecs;
+        }
+
+        function minsChange2() {
+            rmins = Number(this.value);
+            totalRes = rhours * 3600 + rmins * 60 + rsecs;
+        }
+
+        function secsChange2() {
+            rsecs = Number(this.value);
+            totalRes = rhours * 3600 + rmins * 60 + rsecs;
+        }
+
+    </script>
+</body>
+
+</html>
